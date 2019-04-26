@@ -255,12 +255,12 @@
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "{{url}}/v1/auth/github/private",
+					"raw": "{{url}}/v3/auth/github/private",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"v1",
+						"v3",
 						"auth",
 						"github",
 						"private"

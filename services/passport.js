@@ -47,7 +47,7 @@ passport.use(
     {
       clientID: keys.githubClientId,
       clientSecret: keys.githubClientSecret,
-      callbackUrl: '/v1/auth/callback',
+      callbackUrl: '/v3/auth/callback',
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
