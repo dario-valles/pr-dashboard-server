@@ -1,4 +1,4 @@
-const Pullrequest = require('../models/Pullrequest.js')
+const Pullrequest = require('../models/Pullrequest.js');
 const Raven = require('raven');
 const axios = require('axios');
 
@@ -23,18 +23,19 @@ module.exports.listAll = async (req, res) => {
         comment: true,
         comments: true,
         repository: true,
-        seen: true,
-      },
-    ).populate('repository', {
-      name: true,
-      fullName: true,
-      private: true,
-      webUrl: true,
-      description: true,
-      color: true,
-      language: true,
-    }).sort([['created_at','ascending']]);
-    // console.log("PULL REQS", pullrequests)
+        seen: true
+      }
+    )
+      .populate('repository', {
+        name: true,
+        fullName: true,
+        private: true,
+        webUrl: true,
+        description: true,
+        color: true,
+        language: true
+      })
+      .sort([['created_at', 'ascending']]);
     res.status(200).send(pullrequests);
   } catch (e) {
     Raven.captureException(e);
@@ -44,7 +45,7 @@ module.exports.listAll = async (req, res) => {
 
 module.exports.update = async (repo, user) => {
   const axiosConfig = {
-    headers: { Authorization: 'token ' + user.accessToken },
+    headers: { Authorization: 'token ' + user.accessToken }
   };
   const fetchPulls = await axios.get(repo.pullUrl, axiosConfig);
   // console.log("PULLURL", repo.pullUrl)
@@ -52,11 +53,11 @@ module.exports.update = async (repo, user) => {
 
   fetchPulls.data.forEach(async pull => {
     // console.log(pull);
-    const comments = await axios.get(pull.comments_url, axiosConfig)
+    const comments = await axios.get(pull.comments_url, axiosConfig);
     // console.log("COMMENTS", comments.data.length)
-    const commentsBody = comments.data.map(comment => comment.body)
+    const commentsBody = comments.data.map(comment => comment.body);
     // console.log("COMMENT BODY", commentsBody)
-    
+
     const values = {
       githubId: pull.id,
       number: pull.number,
@@ -74,14 +75,14 @@ module.exports.update = async (repo, user) => {
         loginName: pull.user.login,
         picture: pull.user.avatar_url,
         apiUrl: pull.user.url,
-        webUrl: pull.user.html_url,
+        webUrl: pull.user.html_url
       },
       created_at: pull.created_at,
       updated_at: pull.updated_at,
       closed_at: pull.closed_at,
-      merged_at: pull.merged_at,
+      merged_at: pull.merged_at
     };
-    let thisPull = await Pullrequest.find({githubId: pull.id})
+    let thisPull = await Pullrequest.find({ githubId: pull.id });
     if (thisPull) {
       await Pullrequest.findOneAndUpdate(
         {
@@ -105,15 +106,15 @@ module.exports.update = async (repo, user) => {
               loginName: pull.user.login,
               picture: pull.user.avatar_url,
               apiUrl: pull.user.url,
-              webUrl: pull.user.html_url,
+              webUrl: pull.user.html_url
             },
             created_at: pull.created_at,
             updated_at: pull.updated_at,
             closed_at: pull.closed_at,
-            merged_at: pull.merged_at,
+            merged_at: pull.merged_at
           }
         }
-      )
+      );
     } else {
       await new Pullrequest(values).save();
     }
@@ -126,7 +127,7 @@ module.exports.seen = async (req, res) => {
       {
         _id: req.params.id
       },
-      { $set: { seen: true } },
+      { $set: { seen: true } }
     );
     res.status(200).send({ id: req.params.id });
   } catch (e) {
@@ -138,7 +139,7 @@ module.exports.seen = async (req, res) => {
 module.exports.count = async (req, res) => {
   try {
     const count = await Pullrequest.find({
-      seen: false,
+      seen: false
     });
     res.status(200).send({ count: count.length });
   } catch (e) {

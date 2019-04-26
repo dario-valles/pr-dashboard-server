@@ -12,37 +12,40 @@ module.exports = app => {
   // Authentication
   app.get('/v3/auth/github', authGithubController.auth());
   app.get('/v3/auth/github/private', authGithubController.private());
-  app.get('/v3/auth/callback', 
+  app.get(
+    '/v3/auth/callback',
     authGithubController.callback(),
-    authJwtController.generateUserToken,
+    authJwtController.generateUserToken
   );
 
   // Current User
-  app.get('/v3/user/me', requireAuth(), userController.me);
+  app.get('/v3', requireAuth(), userController.me);
 
   // Pull requests
-  app.get('/v3/user/me/pullrequests', requireAuth(), pullrequestController.listAll);
-  app.patch('/v3/user/me/pullrequests/:id/seen',
+  app.get('/v3/pullrequests', requireAuth(), pullrequestController.listAll);
+  app.patch(
+    '/v3/pullrequests/:id/seen',
     requireAuth(),
-    pullrequestController.seen,
+    pullrequestController.seen
   );
-  app.get('/v3/user/me/pullrequests/count', requireAuth(), pullrequestController.count);
+  app.get('/v3/pullrequests/count', requireAuth(), pullrequestController.count);
 
   // Repositories
-  app.get('/v3/user/me/repos', requireAuth(), repoController.listAll);
-  app.get('/v3/user/me/repos/:id/pullrequests',
+  app.get('/v3/repos', requireAuth(), repoController.listAll);
+  app.get(
+    '/v3/repos/:id/pullrequests',
     requireAuth(),
-    repoController.listPullrequests,
+    repoController.listPullrequests
   );
-  app.post('/v3/user/me/repos/socket', repoController.socket);
+  app.post('/repos/socket', repoController.socket);
 
   // Repository settings
-  app.patch('/v3/user/me/repos/:id/color', requireAuth(), repoController.color);
+  app.patch('/v3/repos/:id/color', requireAuth(), repoController.color);
 
   // Github Webhooks
-  app.post('/v3/user/me/webhooks', githubMiddleware, webhookController.newEvent);
-  app.patch('/v3/user/me/repos/:id/enable', requireAuth(), webhookController.enable);
-  app.patch('/v3/user/me/repos/:id/disable', requireAuth(), webhookController.disable);
+  app.post('/v3/webhooks', githubMiddleware, webhookController.newEvent);
+  app.patch('/v3/repos/:id/enable', requireAuth(), webhookController.enable);
+  app.patch('/v3/repos/:id/disable', requireAuth(), webhookController.disable);
 
   // Temporary Websockets communication
   app.get('/pr-update', webSocketController.test);

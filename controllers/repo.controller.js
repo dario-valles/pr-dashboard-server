@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Repository = require('../models/Repository.js')
+const Repository = require('../models/Repository.js');
 const User = require('../models/User.js');
 const Pullrequest = require('../models/Pullrequest');
 const Raven = require('raven');
@@ -22,8 +22,8 @@ module.exports.listAll = async (req, res) => {
         description: true,
         hookEnabled: true,
         color: true,
-        language: true,
-      },
+        language: true
+      }
     );
     res.status(200).send(repositories);
   } catch (e) {
@@ -37,7 +37,7 @@ module.exports.listPullrequests = async (req, res) => {
     const pullrequests = await Repository.find(
       {
         // owner: req.user.id,
-        _id: req.params.id,
+        _id: req.params.id
       },
       {
         name: true,
@@ -46,8 +46,8 @@ module.exports.listPullrequests = async (req, res) => {
         webUrl: true,
         description: true,
         hookEnabled: true,
-        _pullRequests: true,
-      },
+        _pullRequests: true
+      }
     ).populate('_pullRequests.pullRequest', {
       user: true,
       closed_at: true,
@@ -62,7 +62,7 @@ module.exports.listPullrequests = async (req, res) => {
       review: true,
       comment: true,
       comments: true,
-      repository: true,
+      repository: true
     });
     res.status(200).send(pullrequests);
   } catch (e) {
@@ -72,19 +72,19 @@ module.exports.listPullrequests = async (req, res) => {
 };
 
 module.exports.update = async user => {
-  console.log("being called")
+  console.log('being called');
   const axiosConfig = {
-    headers: { Authorization: 'token ' + user.accessToken },
+    headers: { Authorization: 'token ' + user.accessToken }
   };
   const ALL_REPOS = '/user/repos';
   const fetchRepos = await axios.get(
     `${keys.githubBaseUrl}${ALL_REPOS}`,
-    axiosConfig,
+    axiosConfig
   );
 
   fetchRepos.data.forEach(async allRepos => {
     const existingRepo = await Repository.findOne({
-      githubId: allRepos.id,
+      githubId: allRepos.id
     });
     const values = {
       githubId: allRepos.id,
@@ -100,7 +100,7 @@ module.exports.update = async user => {
       owner: user._id,
       created_at: allRepos.created_at,
       updated_at: allRepos.updated_at,
-      synced_at: Date.now(),
+      synced_at: Date.now()
     };
 
     if (!existingRepo) {
@@ -112,10 +112,10 @@ module.exports.update = async user => {
             permissions: {
               admin: allRepos.permissions.admin,
               push: allRepos.permissions.push,
-              pull: allRepos.permissions.pull,
-            },
-          },
-        },
+              pull: allRepos.permissions.pull
+            }
+          }
+        }
       });
 
       // Create new Webhook
@@ -126,8 +126,8 @@ module.exports.update = async user => {
         config: {
           url: keys.githubWebhookUrl,
           content_type: 'json',
-          secret: keys.githubWebhookSecret,
-        },
+          secret: keys.githubWebhookSecret
+        }
       };
 
       if (allRepos.permissions.admin === true) {
@@ -135,7 +135,7 @@ module.exports.update = async user => {
           const webhook = await axios.post(
             allRepos.hooks_url,
             webhookData,
-            axiosConfig,
+            axiosConfig
           );
           await newRepo.update({ hookId: webhook.data.id });
         } catch (e) {
@@ -147,20 +147,19 @@ module.exports.update = async user => {
     } else {
       await existingRepo.update(values);
       await pullrequestController.update(existingRepo, user);
-
     }
   });
 };
 
 module.exports.socket = async (req, res) => {
   const newRepos = await Repository.find({
-    owner: req.body._id,
+    owner: req.body._id
   });
 
   req.body.socket.forEach(client => {
     io.to(client.socketId).emit('message', {
       type: 'repos-update',
-      payload: newRepos,
+      payload: newRepos
     });
   });
 };
@@ -168,7 +167,7 @@ module.exports.socket = async (req, res) => {
 module.exports.delete = async user => {
   const oldRepos = await Repository.find({
     owner: user._id,
-    synced_at: { $lte: new Date().getTime() - 60 * 60 * 1000 * 24 },
+    synced_at: { $lte: new Date().getTime() - 60 * 60 * 1000 * 24 }
   });
   if (oldRepos.length > 0) {
     oldRepos.forEach(async repo => {
@@ -178,10 +177,10 @@ module.exports.delete = async user => {
         {
           $pull: {
             _repositories: {
-              repository: mongoose.Types.ObjectId(repo._id),
-            },
-          },
-        },
+              repository: mongoose.Types.ObjectId(repo._id)
+            }
+          }
+        }
       );
 
       // Remove Pullrequests of this Repositories
@@ -198,14 +197,14 @@ module.exports.color = async (req, res) => {
 
   const repo = await Repository.findOne({
     _id: req.params.id,
-    owner: req.user.id,
+    owner: req.user.id
   });
 
   if (!repo) return res.status(404).send();
 
   try {
     await repo.update({
-      color: req.body.color,
+      color: req.body.color
     });
     res.status(204).send();
   } catch (e) {
