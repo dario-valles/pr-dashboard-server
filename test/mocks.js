@@ -37,6 +37,20 @@ const fakePReq = {
     return {...fakePReq}
   }
 }
+const repository = {
+  name: 'dashboard',
+  fullName: 'PR Dashboard',
+  private: true,
+  webUrl: 'https://github.com/fake/fake',
+  description: 'This is the fake dashboard repo',
+  hookEnabled: true,
+  color: 'red',
+  language: 'English',
+  populate: () => {
+    return {
+      ...repository
+    };
+  }
+};
 
-
-module.exports = { fakeUser, fakePReq };
+module.exports = { fakeUser, fakePReq, repository };
