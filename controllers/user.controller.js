@@ -1,4 +1,4 @@
-const User = require('../models/User.js');
+const User = require('../models/User');
 const Raven = require('raven');
 const axios = require('axios');
 const keys = require('../config/keys');
@@ -6,7 +6,6 @@ const keys = require('../config/keys');
 require('../services/raven');
 
 module.exports.me = async (req, res) => {
-  //console.log(req, res);
   try {
     const me = await User.find(
       { _id: req.user.id },

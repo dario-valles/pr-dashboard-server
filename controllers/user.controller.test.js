@@ -1,80 +1,44 @@
 const controller = require('./user.controller');
-import { me } from './user.controller';
-const UserModel = require('../models/User');
+const User = require('../models/User');
+const { createFakeRequest, createFakeResponse } = require('../test/utils');
+const { fakeUser } = require('../test/mocks');
+jest.mock('../models/User');
 
 describe('User Controller', () => {
-  let User;
-
+  let req, res;
   beforeEach(() => {
-    User = generateFakeUserModel();
-    jest.mock('./user.controller.js', () => {
-      me: jest.fn();
-    });
+    res = createFakeResponse();
   });
 
   it('does set correct status', async () => {
-    const req = createFakeRequest('1234');
-    const res = createFakeResponse();
-    console.log(await controller.me(req, res));
+    User.find.mockImplementationOnce(() => fakeUser);
+    console.log('%c⧭', 'color: #f2ceb6', fakeUser);
+    req = createFakeRequest('1234');
+
     await controller.me(req, res);
-    expect(controller.me).toHaveBeenCalledWith(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+
+    User.find.mockImplementationOnce(() => {
+      throw new Error();
+    });
+    await controller.me(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it('does set correct body', () => {});
+  it('does set correct body', async () => {
+    User.find.mockImplementationOnce(() => fakeUser);
+    req = createFakeRequest('1234');
 
-  it("doesn't break passing no id", () => {});
+    await controller.me(req, res);
+
+    expect(res.send).toHaveBeenCalledWith(fakeUser);
+  });
 });
+
 // Create fake "User" model
 // having .find() function
-const fakeUser = {
-  _id: '1234',
-  loginName: 'konstantin',
-  displayName: 'Konstantin',
-  email: 'k@gmail.com',
-  picture: 'konstantin.jpg',
-  webUrl: 'https://www.konstantin.com'
-};
-
-function generateFakeUserModel() {
-  return {
-    find: jest.fn(() => fakeUser)
-  };
-}
-
-function createFakeRequest(id) {
-  return {
-    user: {
-      id
-    }
-  };
-}
-
-function createFakeResponse() {
-  const res = {};
-  Object.assign(res, {
-    status: jest.fn(
-      function status() {
-        return this;
-      }.bind(res)
-    ),
-    send: jest.fn(
-      function send() {
-        return this;
-      }.bind(res)
-    )
-  });
-  return res;
-}
-
-// test('Me returns the specific User', async () => {
-//   const { req, res } = setup();
-//   await controller.me(req, res);
-
-//   expect(res.send).toHaveBeenCalledTimes(1);
-//   console.log(res.status.mock.calls);
-//   expect(res.status).toHaveBeenCalledTimes(1);
-// });
-
 // mock ../models/User.js
 // 1. Setup
 //    Create mock req, res
