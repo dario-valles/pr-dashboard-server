@@ -2,7 +2,11 @@ function createFakeRequest(id) {
   return {
     user: {
       id
-    }
+    },
+    params: {
+      id
+    },
+    closed_at: null
   };
 }
 

@@ -12,7 +12,6 @@ describe('User Controller', () => {
 
   it('does set correct status', async () => {
     User.find.mockImplementationOnce(() => fakeUser);
-    console.log('%c⧭', 'color: #f2ceb6', fakeUser);
     req = createFakeRequest('1234');
 
     await controller.me(req, res);
