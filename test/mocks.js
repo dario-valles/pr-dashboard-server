@@ -7,4 +7,20 @@ const fakeUser = {
   webUrl: 'https://www.konstantin.com'
 };
 
-module.exports = { fakeUser };
+const repository = {
+  name: 'dashboard',
+  fullName: 'PR Dashboard',
+  private: true,
+  webUrl: 'https://github.com/fake/fake',
+  description: 'This is the fake dashboard repo',
+  hookEnabled: true,
+  color: 'red',
+  language: 'English',
+  populate: () => {
+    return {
+      ...repository
+    };
+  }
+};
+
+module.exports = { fakeUser, repository };
