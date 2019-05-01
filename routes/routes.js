@@ -26,7 +26,7 @@ module.exports = app => {
   app.get('/v3', requireAuth(), userController.me);
 
   // Pull requests
-  app.get('/v3/pullrequests', pullrequestController.listAll);
+  app.get('/v3/pullrequests', (req, res) => res.status(200));
   app.patch(
     '/v3/pullrequests/:id/seen',
     requireAuth(),

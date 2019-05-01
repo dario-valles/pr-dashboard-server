@@ -1,8 +1,7 @@
-const server = require('../server');
 const request = require('supertest');
+const app = require('../server');
 
 //afterEach(() => {});
-server.close();
 
 describe('routes', () => {
   // it('should respond as expected, no endpoint definition at /', async () => {
@@ -20,15 +19,14 @@ describe('routes', () => {
   //     .expect(200, done);
   // });
 
-  it('Should return', async done => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NTY2OTYyODgsImV4cCI6MTU1NjY5OTg4OCwiYXVkIjoicHJkYXNoYm9hcmQuY29tIiwiaXNzIjoiYXBwLnByZGFzaGJvYXJkLmNvbSIsInN1YiI6IjEyMzQifQ.reS6DfQaV_OUDJ1X78E-hnNjfw5MNdCTerbkiS8otaA';
-
-    await request(server)
+  it('Should return', () => {
+    // const token =
+      // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NTY2OTYyODgsImV4cCI6MTU1NjY5OTg4OCwiYXVkIjoicHJkYXNoYm9hcmQuY29tIiwiaXNzIjoiYXBwLnByZGFzaGJvYXJkLmNvbSIsInN1YiI6IjEyMzQifQ.reS6DfQaV_OUDJ1X78E-hnNjfw5MNdCTerbkiS8otaA';
+    request(app)
       .get('/v3/pullrequests')
       .set('Accept', 'application/json')
-      .set('Authorization', `jwt ${token}`)
+      // .set('Authorization', `jwt ${token}`)
       .expect(200)
-      .end(done);
+      .end()
   });
 });

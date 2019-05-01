@@ -1,4 +1,4 @@
-const { app, http } = require('./setupServer.js');
+const { app } = require('./setupServer.js');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -52,6 +52,8 @@ require('./routes/routes')(app);
 const PORT = 5000;
 const ENV = process.env.NODE_ENV || 'development';
 
-module.exports = http.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT} in ${ENV} mode!`);
 });
+
+module.exports = app;
