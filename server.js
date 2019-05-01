@@ -35,8 +35,8 @@ socket.removeSockets();
 app.use(
   cors({
     origin: keys.clientUrl,
-    methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-  }),
+    methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE'
+  })
 );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -49,10 +49,9 @@ require('./routes/routes')(app);
 // Server running process
 // const PORT = process.env.PORT || 5000;
 //devmode
-const PORT = 5000
-
+const PORT = 5000;
 const ENV = process.env.NODE_ENV || 'development';
 
-http.listen(PORT, () =>
-  console.log(`Server is running on port ${PORT} in ${ENV} mode!`),
-);
+module.exports = http.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT} in ${ENV} mode!`);
+});

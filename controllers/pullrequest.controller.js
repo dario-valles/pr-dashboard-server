@@ -4,7 +4,9 @@ const axios = require('axios');
 
 require('../services/raven');
 
-module.exports.listAll = async (req, res) => {
+module.exports.listAll = async () => {
+  console.log('aquiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii');
+
   try {
     const pullrequests = await Pullrequest.find(
       { closed_at: null },

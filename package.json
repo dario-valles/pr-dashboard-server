@@ -12,6 +12,9 @@
     "start": "node server.js",
     "test": "jest"
   },
+  "jest": {
+    "testEnviroment": "node"
+  },
   "dependencies": {
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
@@ -34,9 +37,11 @@
     "node": "8.11.1"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
     "chai": "^4.1.2",
     "jest": "^24.7.1",
     "rewire": "^4.0.1",
-    "sinon": "^6.1.4"
+    "sinon": "^6.1.4",
+    "supertest": "^4.0.2"
   }
 }
