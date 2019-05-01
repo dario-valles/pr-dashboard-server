@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 
-function generateAccessToken(userId) {
-  const expiresIn = '1 hour';
+function generateAccessToken(userId, infinite = false) {
+  const expiresIn = `1 ${infinite ? 'year' : 'month'}`;
   const issuer = keys.jsonWebTokenIssuer;
   const audience = keys.jsonWebTokenAudience;
   const secret = keys.jsonWebTokenSecret;
@@ -15,6 +15,8 @@ function generateAccessToken(userId) {
 
   return token;
 }
+
+console.log('TOKEN', generateAccessToken('5cc3275306ceea6b73b37f95', true));
 
 module.exports.generateUserToken = (req, res) => {
   const accessToken = generateAccessToken(req.user.id);

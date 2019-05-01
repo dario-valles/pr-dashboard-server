@@ -19,7 +19,7 @@ io.on('connection', async function(client) {
     console.log(`Ensure the user ${username} has the SocketID ${client.id}`);
     const existingSocket = await User.findOne({
       loginName: username,
-      'socket.socketId': client.id,
+      'socket.socketId': client.id
     });
 
     if (!existingSocket) {
@@ -28,10 +28,10 @@ io.on('connection', async function(client) {
         {
           $push: {
             socket: {
-              socketId: client.id,
-            },
-          },
-        },
+              socketId: client.id
+            }
+          }
+        }
       );
     }
   });
@@ -40,22 +40,36 @@ io.on('connection', async function(client) {
     // Ensure the `client.id` does not exist for any user in the database
     console.log(`Connection dropped: ${client.id}`);
     const remSocket = await User.findOne({
-      'socket.socketId': client.id,
+      'socket.socketId': client.id
     });
 
     if (remSocket) {
       await remSocket.update({
         $pull: {
-          socket: { socketId: client.id },
-        },
+          socket: { socketId: client.id }
+        }
       });
     }
   });
 });
+
+const tearDown = () =>
+  new Promise(resolve => {
+    // console.log('MONGOOSE CONNECTION', mongoose.connection);
+    io.close(async (err, data) => {
+      // await mongoose.connection.close(true, () => {
+      // http.close((err, data) => {
+      console.log('HTTP SERVER CLOSED', err, data);
+      resolve();
+      // });
+      // });
+    });
+  });
 
 module.exports = {
   app,
   http,
   io,
   socket,
+  tearDown
 };

@@ -6,9 +6,9 @@ const mongoose = require('mongoose');
 const keys = require('../config/keys');
 const userController = require('../controllers/user.controller');
 const repoController = require('../controllers/repo.controller');
-const pullRequestController = require('../controllers/pullrequest.controller')
+const pullRequestController = require('../controllers/pullrequest.controller');
 
-const User = require('../models/User.js')
+const User = require('../models/User.js');
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -25,7 +25,7 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
       secretOrKey: keys.jsonWebTokenSecret,
       issuer: keys.jsonWebTokenIssuer,
-      audience: keys.jsonWebTokenAudience,
+      audience: keys.jsonWebTokenAudience
     },
     async (payload, done) => {
       try {
@@ -36,10 +36,11 @@ passport.use(
           done(null, false);
         }
       } catch (e) {
+        console.error(e);
         return done(e, false);
       }
-    },
-  ),
+    }
+  )
 );
 
 passport.use(
@@ -47,7 +48,7 @@ passport.use(
     {
       clientID: keys.githubClientId,
       clientSecret: keys.githubClientSecret,
-      callbackUrl: '/v3/auth/callback',
+      callbackUrl: '/v3/auth/callback'
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -56,7 +57,6 @@ passport.use(
           await existingUser.update({ $set: { accessToken } });
           await userController.update(existingUser);
           await repoController.update(existingUser);
-
 
           return done(null, existingUser);
         }
@@ -69,16 +69,15 @@ passport.use(
           webUrl: profile._json.html_url,
           accessToken: accessToken,
           created_at: profile._json.created_at,
-          updated_at: profile._json.updated_at,
+          updated_at: profile._json.updated_at
         }).save();
         await userController.update(user);
         await repoController.update(user);
 
         done(null, user);
-
       } catch (e) {
         return done(e, false);
       }
-    },
-  ),
+    }
+  )
 );

@@ -1,4 +1,4 @@
-const { app, http } = require('./setupServer.js');
+const { app, http, tearDown } = require('./setupServer.js');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -22,12 +22,6 @@ require('./services/passport');
 // Error Notification Service
 require('./services/raven');
 
-// Connect to MongoDB
-mongoose
-  .connect(keys.mongoURI)
-  .then(() => console.log('MongoDB connected.'))
-  .catch(e => console.log(e));
-
 // Remove Sockets after reboot
 socket.removeSockets();
 
@@ -35,8 +29,8 @@ socket.removeSockets();
 app.use(
   cors({
     origin: keys.clientUrl,
-    methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-  }),
+    methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE'
+  })
 );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -49,10 +43,22 @@ require('./routes/routes')(app);
 // Server running process
 // const PORT = process.env.PORT || 5000;
 //devmode
-const PORT = 5000
+const PORT = 5000;
 
 const ENV = process.env.NODE_ENV || 'development';
 
-http.listen(PORT, () =>
-  console.log(`Server is running on port ${PORT} in ${ENV} mode!`),
-);
+console.log('MAKING HTTP SERVER TO LISEN...');
+http.tearDown = tearDown;
+
+module.exports = new Promise(async resolve => {
+  // Connect to MongoDB
+  await mongoose
+    .connect(keys.mongoURI)
+    .then(() => console.log('MongoDB connected.'))
+    .catch(e => console.log(e));
+
+  http.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT} in ${ENV} mode!`);
+    resolve(http);
+  });
+});
