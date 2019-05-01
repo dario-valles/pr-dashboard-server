@@ -4,9 +4,13 @@ const webhookController = require('../controllers/webhook.controller');
 const pullrequestController = require('../controllers/pullrequest.controller');
 const repoController = require('../controllers/repo.controller');
 const userController = require('../controllers/user.controller');
-const webSocketController = require('../controllers/websockets.controller');
 const githubMiddleware = require('../middleware/github');
 const requireAuth = require('../middleware/requireAuth');
+
+// WSocket as class for dependency injection test
+const WSocket = require('../controllers/websockets.controller');
+const { io } = require('../services/socket');
+const webSocketController = new WSocket({ io });
 
 module.exports = app => {
   // Authentication
@@ -22,7 +26,7 @@ module.exports = app => {
   app.get('/v3', requireAuth(), userController.me);
 
   // Pull requests
-  app.get('/v3/pullrequests', requireAuth(), pullrequestController.listAll);
+  app.get('/v3/pullrequests', (req, res) => res.status(200));
   app.patch(
     '/v3/pullrequests/:id/seen',
     requireAuth(),

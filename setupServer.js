@@ -1,7 +1,6 @@
 const app = require('express')();
 const port = process.env.PORT || 3001;
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')();
 const mongoose = require('mongoose');
 require('./models/User');
 const User = require('./models/User.js');
@@ -68,7 +67,6 @@ const tearDown = () =>
 
 module.exports = {
   app,
-  http,
   io,
   socket,
   tearDown

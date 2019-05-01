@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const { app, http, tearDown } = require('./setupServer.js');
+=======
+const { app } = require('./setupServer.js');
+>>>>>>> fb96e8f11ae54477907753bf7ede90acd91be1b0
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -44,6 +48,7 @@ require('./routes/routes')(app);
 // const PORT = process.env.PORT || 5000;
 //devmode
 const PORT = 5000;
+<<<<<<< HEAD
 
 const ENV = process.env.NODE_ENV || 'development';
 
@@ -62,3 +67,12 @@ module.exports = new Promise(async resolve => {
     resolve(http);
   });
 });
+=======
+const ENV = process.env.NODE_ENV || 'development';
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT} in ${ENV} mode!`);
+});
+
+module.exports = app;
+>>>>>>> fb96e8f11ae54477907753bf7ede90acd91be1b0

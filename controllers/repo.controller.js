@@ -152,16 +152,20 @@ module.exports.update = async user => {
 };
 
 module.exports.socket = async (req, res) => {
-  const newRepos = await Repository.find({
-    owner: req.body._id
-  });
-
-  req.body.socket.forEach(client => {
-    io.to(client.socketId).emit('message', {
-      type: 'repos-update',
-      payload: newRepos
+  try {
+    const newRepos = await Repository.find({
+      owner: req.body._id
     });
-  });
+
+    req.body.socket.forEach(client => {
+      io.to(client.socketId).emit('message', {
+        type: 'repos-update',
+        payload: newRepos
+      });
+    });
+  } catch (error) {
+    res.status(404).send();
+  }
 };
 
 module.exports.delete = async user => {
